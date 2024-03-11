@@ -10,6 +10,7 @@
             margin: auto;
         }
     </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Hello world</h1>
@@ -27,10 +28,10 @@
         Female <input type="radio" name="gender" id="gender" value="female"> <br>
         <label for="gpa">GPA</label>
         <input type="number" name="gpa" id="gpa">  <br>
-        <label for="subject-enjoy">Subject enjoy</label> <br>
-        IT Lecturer <input type="checkbox" name="subject-enjoy" id="subject-enjoy" value="IT Lecturer">  <br>
-        Project Management <input type="checkbox" name="subject-enjoy" id="subject-enjoy" value="Project Management"><br>
-        Website Development <input type="checkbox" name="subject-enjoy" id="subject-enjoy" value="Website Development"><br>
+        <label for="subject_enjoy">Subject enjoy</label> <br>
+        IT Lecturer <input type="checkbox" name="subject_enjoy" id="subject_enjoy" value="IT Lecturer">  <br>
+        Project Management <input type="checkbox" name="subject_enjoy" id="subject_enjoy" value="Project Management"><br>
+        Website Development <input type="checkbox" name="subject_enjoy" id="subject_enjoy" value="Website Development"><br>
         <label for="majors">Majors</label>
         <select name="majors"> 
             <option value="SE">SE</option>
@@ -52,11 +53,23 @@
                 <th>Avg</th>
                 <th>Subject enjoy</th>
                 <th>Majors</th>
+                <th>Avatar</th>
             </tr>
         </thead>
         <tbody>
-            <% if (students.lenth >  0) { %>
-             
+            <% if (students.length >  0) { %>
+                <% students.forEach((student) =>{ %>
+                    <tr>
+                        <td><%= student.id %></td>
+                        <td><%= student.name %></td>
+                        <td><%= student.gender %></td>
+                        <td><%= student.gpa %></td>
+                        <td><%= student.subject_enjoy %></td>
+                        <td><%= student.majors %></td>
+                        <td><img src="<%= student.image %>" alt="" width="100"></td>
+
+                    </tr>
+               <% }) %>
             <% } %>
             
         </tbody>

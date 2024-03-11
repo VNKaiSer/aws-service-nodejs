@@ -23,7 +23,7 @@ const S3 = new AWS.S3()
 const Dynamodb = new AWS.DynamoDB.DocumentClient()
 
 // Dynamodb
-const table = 'student'
+const table = 'students'
 // 1. multer
 const storage = multer.memoryStorage({
     destionation(req, file, cb){
@@ -61,12 +61,56 @@ app.get('/', async(req,res) =>{
         TableName : table
     }).promise();
     const students =  Array.isArray(responsive.Items) ? responsive.Items : [responsive.Items]
-    console.log(responsive)
+    console.log(students)
     res.render('index.ejs', {students})
 }) 
 
 app.post('/save',upload.single("avatar"), (req, res)=>{
+    console.log(req.body)
     // upload s3
+    const data = { 
+        id : req.body.id,
+        name : req.body.name,
+        gender : req.body.gender,
+        gpa : req.body.gpa,
+        // subject_enjoy : req.body.subject_enjoy,
+        majors : req.body.majors
+    }
+    console.log(data)
+   try {
+    const file = req.file;
+    const fileName = `${Date.now().toString()}-${file.originalname}`
+    const s3Params = {
+        Bucket : process.env.S3_BUCKET_NAME,
+        Body : file.buffer,
+        ContentType: file.mimetype,
+        Key : fileName
+
+    }
+    S3.upload(s3Params, async(err, data)=>{
+        if(err){
+            console.log('Error: ', err)
+            return res.status(500).send('500 Internal Server Error')
+        } else{
+            const DynamoParams = {
+                TableName : table,
+                Item : {
+                    id : req.body.id,
+                    name : req.body.name,
+                    gender : req.body.gender,
+                    gpa : req.body.gpa,
+                    subject_enjoy : req.body.subject_enjoy,
+                    image : data.Location,
+                    majors : req.body.majors
+                }
+            }
+           await Dynamodb.put(DynamoParams).promise();
+        }
+        res.redirect('/')
+    })
+   } catch (error) {
+        console.log(err)
+   }
 })
 
 app.listen(process.env.PORT, () =>{
